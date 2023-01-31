@@ -1,7 +1,7 @@
 """Generate Markov text from text files."""
 
 from random import choice
-
+import sys
 
 def open_and_read_file(file_path):
     """Take file path as string; return text as string.
@@ -58,6 +58,7 @@ def make_text(chains):
     link = list(chains.keys())  
     key = tuple(choice(link))
     words.extend(list(key))
+    words[0] = words[0].title()
 
     while chains.get(key):
         new_word = choice(chains[key])
@@ -70,15 +71,20 @@ def make_text(chains):
     return ' '.join(words)
 
 
-input_path = 'gettysburg.txt'
+input_path1 = sys.argv[1]
+input_path2 = sys.argv[2]
 
 # Open the file and turn it into one long string
-input_text = open_and_read_file(input_path)
+input_text1 = open_and_read_file(input_path1)
+input_text2 = open_and_read_file(input_path2)
 
 # Get a Markov chain
-chains = make_chains(input_text)
+chains1 = make_chains(input_text1)
+chains2 = make_chains(input_text2)
+
+chains1.update(chains2)
 
 # Produce random text
-random_text = make_text(chains)
+random_text = make_text(chains1)
 
 print(random_text)
