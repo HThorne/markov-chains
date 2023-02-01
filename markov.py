@@ -16,7 +16,7 @@ def open_and_read_file(file_path):
 
 # print(open_and_read_file('green-eggs.txt'))  # test
 
-def make_chains(text_string):
+def make_chains(text_string, n = 2):
     """Take input text as string; return dictionary of Markov chains.
 
     A chain will be a key that consists of a tuple of (word1, word2)
@@ -43,10 +43,10 @@ def make_chains(text_string):
     words = text_string.split()
     chains = {}
     
-    for i in range(len(words) - 2):
-        key = (words[i], words[i+1])
+    for i in range(len(words) - n):
+        key = tuple(words[i : (i+(n))])
         
-        chains[key] = chains.get(key, []) + [words[i+2]]
+        chains[key] = chains.get(key, []) + [words[i+n]]
 
     return chains
 
@@ -64,11 +64,14 @@ def make_text(chains):
         new_word = choice(chains[key])
         words.append(new_word)
 
-        key = (key[1], new_word)
+        key = key[1:] + (new_word,)
         continue
 
-    
-    return ' '.join(words)
+    if words[-1][-1].isalpha() == False:
+        return ' '.join(words)
+    else:
+        words[-1] += choice(["!", "?", "."])
+        return ' '.join(words)
 
 
 input_path1 = sys.argv[1]
@@ -82,9 +85,10 @@ input_text2 = open_and_read_file(input_path2)
 chains1 = make_chains(input_text1)
 chains2 = make_chains(input_text2)
 
-chains1.update(chains2)
+# Join multiple dictionaries
+merged_chains = chains1 | chains2
 
 # Produce random text
-random_text = make_text(chains1)
+random_text = make_text(merged_chains)
 
 print(random_text)
